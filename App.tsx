@@ -177,7 +177,7 @@ export default function DiceApp(): React.ReactElement {
     scene.current.add(directionalLight);
 
     // 地面の視覚的表現
-    const floorGeometry = new THREE.PlaneGeometry(6, 6);
+    const floorGeometry = new THREE.PlaneGeometry(3, 3); // 床のサイズを縮小
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0x444444,
       roughness: 0.8,
@@ -192,7 +192,7 @@ export default function DiceApp(): React.ReactElement {
     // Expo-ThreeではRoundedBoxGeometryが直接利用できないため、代替アプローチを使用
 
     // 球体と立方体を組み合わせて角丸のサイコロを作成
-    const boxSize = 0.8; // 少し小さめの箱サイズ
+    const boxSize = 1; // 少し小さめの箱サイズ
     const diceGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
 
     // 球体とボックスのジオメトリを組み合わせることで角丸の見た目を作ることもできますが、
@@ -314,9 +314,9 @@ export default function DiceApp(): React.ReactElement {
     cannonBody.current.angularVelocity.set(0, 0, 0);
 
     // 完全にランダムな力を加える
-    const minUpwardForce = 5;  // 最小上向きの力
-    const maxUpwardForce = 8;  // 最大上向きの力
-    const horizontalForce = 3; // 水平方向の力の最大値
+    const minUpwardForce = 8;  // 最小上向きの力
+    const maxUpwardForce = 10;  // 最大上向きの力
+    const horizontalForce = 1; // 水平方向の力の最大値
 
     // 上向きには常に強い力を、水平方向にはランダムな力を加える
     const impulse = new CANNON.Vec3(
@@ -328,7 +328,7 @@ export default function DiceApp(): React.ReactElement {
     cannonBody.current.applyImpulse(impulse);
 
     // 回転力も完全にランダムに加える
-    const torqueMagnitude = 1.5; // 回転力の大きさ
+    const torqueMagnitude = 10; // 回転力の大きさ
     const angularImpulse = new CANNON.Vec3(
       (Math.random() * 2 - 1) * torqueMagnitude,
       (Math.random() * 2 - 1) * torqueMagnitude,
