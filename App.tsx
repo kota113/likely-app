@@ -1,17 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { GLView, ExpoWebGLRenderingContext } from 'expo-gl';
 import { Renderer, TextureLoader, THREE } from 'expo-three';
 import * as CANNON from 'cannon-es';
 import { Accelerometer } from 'expo-sensors';
-
-type DiceResult = number | string;
-
-interface CannonVec3 {
-  x: number;
-  y: number;
-  z: number;
-}
 
 interface PhysicsBody {
   position: CANNON.Vec3;
@@ -23,9 +15,8 @@ interface PhysicsBody {
 }
 
 export default function DiceApp(): React.ReactElement {
-  const [result, setResult] = useState<DiceResult>('振ってください');
   const [isSensorAvailable, setSensorAvailable] = useState<boolean>(true);
-  const [sensorSubscription, setSensorSubscription] = useState<{ remove: () => void } | null>(null);
+  const [message, setMessage] = useState<string>('端末を振るとサイコロが転がります');
 
   const world = useRef<CANNON.World>(new CANNON.World());
   const dice = useRef<THREE.Mesh | null>(null);
@@ -34,44 +25,49 @@ export default function DiceApp(): React.ReactElement {
   const camera = useRef<THREE.PerspectiveCamera | null>(null);
   const scene = useRef<THREE.Scene | null>(null);
   const isRolling = useRef<boolean>(false);
-  const lastAcceleration = useRef<CannonVec3>({ x: 0, y: 0, z: 0 });
-
-  // サイコロの面のマッピング
-  const faceMap: { [key: number]: number } = {
-    0: 6, // 底面 (実際には6)
-    1: 1, // 左面
-    2: 5, // 背面
-    3: 2, // 右面
-    4: 3, // 正面
-    5: 4  // 上面
-  };
+  const accelerationThreshold = 2.0; // 加速度変化の閾値
+  const lastRollTime = useRef<number>(0);
+  const rollCooldown = 800; // ミリ秒単位のクールダウン
 
   // 加速度センサーのセットアップ
   useEffect(() => {
     let subscription: { remove: () => void } | null = null;
+    // 前回の加速度を記録
+    let lastAccelData = { x: 0, y: 0, z: 0 };
 
     const setupSensors = async (): Promise<void> => {
       const isAccelerometerAvailable = await Accelerometer.isAvailableAsync();
 
       if (isAccelerometerAvailable) {
-        Accelerometer.setUpdateInterval(100); // 更新間隔（ミリ秒）
+        Accelerometer.setUpdateInterval(50); // 更新間隔（ミリ秒）
 
         subscription = Accelerometer.addListener((data) => {
-          if (!isRolling.current && cannonBody.current) {
-            // 加速度データを保存
-            lastAcceleration.current = {
-              x: data.x,
-              y: data.y,
-              z: data.z
-            };
+          // 加速度の変化量を計算
+          const deltaX = Math.abs(data.x - lastAccelData.x);
+          const deltaY = Math.abs(data.y - lastAccelData.y);
+          const deltaZ = Math.abs(data.z - lastAccelData.z);
+
+          // 変化量の合計（振動の激しさ）
+          const totalDelta = deltaX + deltaY + deltaZ;
+
+          // 現在の加速度を保存
+          lastAccelData = { x: data.x, y: data.y, z: data.z };
+
+          // しきい値を超えた場合でクールダウン期間が過ぎていればサイコロを振る
+          const now = Date.now();
+          if (totalDelta > accelerationThreshold &&
+            !isRolling.current &&
+            now - lastRollTime.current > rollCooldown) {
+            console.log("振動を検知:", totalDelta);
+            rollDice();
+            lastRollTime.current = now;
           }
         });
 
-        setSensorSubscription(subscription);
         setSensorAvailable(true);
       } else {
         setSensorAvailable(false);
-        console.log('加速度センサーが利用できません');
+        setMessage('加速度センサーが利用できません');
       }
     };
 
@@ -84,67 +80,68 @@ export default function DiceApp(): React.ReactElement {
     };
   }, []);
 
-  // 結果を判定する関数
-  const getDiceValue = (): number | null => {
-    if (!cannonBody.current) return null;
-
-    // サイコロの向きを取得
-    const rotation = cannonBody.current.quaternion;
-    const rotationMatrix = new CANNON.Mat3();
-    rotationMatrix.setRotationFromQuaternion(rotation);
-
-    // Y軸方向の向きベクトルを計算
-    const upVector = new CANNON.Vec3(0, 1, 0);
-    const transformedVector = new CANNON.Vec3();
-    rotationMatrix.vmult(upVector, transformedVector);
-
-    // 最も上を向いている面を判定
-    let maxDot = -Infinity;
-    let faceIndex = -1;
-
-    // 各面の法線ベクトル
-    const normals: CANNON.Vec3[] = [
-      new CANNON.Vec3(0, -1, 0), // 底面
-      new CANNON.Vec3(-1, 0, 0), // 左面
-      new CANNON.Vec3(0, 0, -1), // 背面
-      new CANNON.Vec3(1, 0, 0),  // 右面
-      new CANNON.Vec3(0, 0, 1),  // 正面
-      new CANNON.Vec3(0, 1, 0)   // 上面
-    ];
-
-    // 最も上を向いている面を計算
-    for (let i = 0; i < normals.length; i++) {
-      const dot = transformedVector.dot(normals[i]);
-      if (dot > maxDot) {
-        maxDot = dot;
-        faceIndex = i;
-      }
-    }
-
-    return faceMap[faceIndex];
-  };
-
   // 物理世界の初期化
   const initPhysics = (): void => {
     if (!world.current) return;
 
+    // 重力を設定
     world.current.gravity.set(0, -9.82, 0);
     world.current.broadphase = new CANNON.NaiveBroadphase();
-    // world.current.solver.iterations = 10;
 
-    // 地面を作成
+    // 摩擦とダンピングを増やして動きを減衰させる
+    world.current.defaultContactMaterial.friction = 0.5;
+    world.current.defaultContactMaterial.restitution = 0.3;
+
+    // 壁を作成（サイコロが画面外に出ないようにする）
+    // 地面
     const groundShape = new CANNON.Plane();
     const groundBody = new CANNON.Body({ mass: 0 });
     groundBody.addShape(groundShape);
     groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    groundBody.position.set(0, -2, 0);
+    groundBody.position.set(0, -0.5, 0); // 地面の位置を上げる
     world.current.addBody(groundBody);
+
+    // 壁（左）
+    const leftWallShape = new CANNON.Plane();
+    const leftWallBody = new CANNON.Body({ mass: 0 });
+    leftWallBody.addShape(leftWallShape);
+    leftWallBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2);
+    leftWallBody.position.set(-3, 0, 0);
+    world.current.addBody(leftWallBody);
+
+    // 壁（右）
+    const rightWallShape = new CANNON.Plane();
+    const rightWallBody = new CANNON.Body({ mass: 0 });
+    rightWallBody.addShape(rightWallShape);
+    rightWallBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI / 2);
+    rightWallBody.position.set(3, 0, 0);
+    world.current.addBody(rightWallBody);
+
+    // 壁（奥）
+    const backWallShape = new CANNON.Plane();
+    const backWallBody = new CANNON.Body({ mass: 0 });
+    backWallBody.addShape(backWallShape);
+    backWallBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), 0);
+    backWallBody.position.set(0, 0, -3);
+    world.current.addBody(backWallBody);
+
+    // 壁（手前）
+    const frontWallShape = new CANNON.Plane();
+    const frontWallBody = new CANNON.Body({ mass: 0 });
+    frontWallBody.addShape(frontWallShape);
+    frontWallBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
+    frontWallBody.position.set(0, 0, 3);
+    world.current.addBody(frontWallBody);
 
     // サイコロの物理ボディを作成
     const boxShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-    const body = new CANNON.Body({ mass: 1 });
+    const body = new CANNON.Body({
+      mass: 1,
+      linearDamping: 0.5, // 移動の減衰
+      angularDamping: 0.5  // 回転の減衰
+    });
     body.addShape(boxShape);
-    body.position.set(0, 3, 0);
+    body.position.set(0, 0, 0); // 地面に接した状態から開始
     world.current.addBody(body);
     cannonBody.current = body as unknown as PhysicsBody;
   };
@@ -156,8 +153,7 @@ export default function DiceApp(): React.ReactElement {
     // @ts-ignore
     renderer.current.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
     // @ts-ignore
-    // memo: typingされてないだけ
-    renderer.current.setClearColor('black');
+    renderer.current.setClearColor('#333333');
 
     // シーンの作成
     scene.current = new THREE.Scene();
@@ -169,29 +165,81 @@ export default function DiceApp(): React.ReactElement {
       0.1,
       1000
     );
-    camera.current.position.set(0, 0, 5);
+    camera.current.position.set(0, 2, 5); // カメラ位置を調整
+    camera.current.lookAt(0, 0, 0);
 
     // ライトの設定
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.current.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
+    directionalLight.position.set(1, 5, 2);
     scene.current.add(directionalLight);
 
-    // サイコロの作成
-    const diceGeometry = new THREE.BoxGeometry(1, 1, 1);
+    // 地面の視覚的表現
+    const floorGeometry = new THREE.PlaneGeometry(6, 6);
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0x444444,
+      roughness: 0.8,
+      metalness: 0.2
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.5;
+    scene.current.add(floor);
+
+    // 角丸サイコロの作成 - BoxGeometryの代わりにRoundedBoxGeometryライクな形状を使用
+    // Expo-ThreeではRoundedBoxGeometryが直接利用できないため、代替アプローチを使用
+
+    // 球体と立方体を組み合わせて角丸のサイコロを作成
+    const boxSize = 0.8; // 少し小さめの箱サイズ
+    const diceGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+
+    // 球体とボックスのジオメトリを組み合わせることで角丸の見た目を作ることもできますが、
+    // Expoの環境制限を考慮して、ここではシンプルなBoxGeometryを使用します
 
     // テクスチャのロード
     const textureLoader = new TextureLoader();
-    const texture = await textureLoader.load(require('./assets/brick.jpg'));
 
-    // 全ての面に同じテクスチャを使用
-    const material = new THREE.MeshStandardMaterial({ map: texture });
+    try {
+      const textures = await Promise.all([
+        textureLoader.load(require('./assets/dice1.png')),
+        textureLoader.load(require('./assets/dice2.png')),
+        textureLoader.load(require('./assets/dice3.png')),
+        textureLoader.load(require('./assets/dice4.png')),
+        textureLoader.load(require('./assets/dice5.png')),
+        textureLoader.load(require('./assets/dice6.png')),
+      ]);
 
-    // サイコロのメッシュを作成
-    dice.current = new THREE.Mesh(diceGeometry, material);
-    scene.current.add(dice.current);
+      // サイコロのマテリアル (面ごとに異なるテクスチャ)
+      const materials = [
+        new THREE.MeshStandardMaterial({ map: textures[3] }), // 右面 (4)
+        new THREE.MeshStandardMaterial({ map: textures[0] }), // 左面 (1)
+        new THREE.MeshStandardMaterial({ map: textures[4] }), // 上面 (5)
+        new THREE.MeshStandardMaterial({ map: textures[5] }), // 底面 (6)
+        new THREE.MeshStandardMaterial({ map: textures[2] }), // 前面 (3)
+        new THREE.MeshStandardMaterial({ map: textures[1] }), // 後面 (2)
+      ];
+
+      // サイコロのメッシュを作成
+      dice.current = new THREE.Mesh(diceGeometry, materials);
+      scene.current.add(dice.current);
+    } catch (error) {
+      console.error('テクスチャの読み込みに失敗しました:', error);
+
+      // エラー時のフォールバック: 単色で表示
+      const fallbackMaterials = [
+        new THREE.MeshStandardMaterial({ color: 0xff0000 }), // 赤
+        new THREE.MeshStandardMaterial({ color: 0x00ff00 }), // 緑
+        new THREE.MeshStandardMaterial({ color: 0x0000ff }), // 青
+        new THREE.MeshStandardMaterial({ color: 0xffff00 }), // 黄
+        new THREE.MeshStandardMaterial({ color: 0xff00ff }), // マゼンタ
+        new THREE.MeshStandardMaterial({ color: 0x00ffff }), // シアン
+      ];
+
+      dice.current = new THREE.Mesh(diceGeometry, fallbackMaterials);
+      scene.current.add(dice.current);
+    }
 
     // 物理世界の初期化
     initPhysics();
@@ -211,18 +259,23 @@ export default function DiceApp(): React.ReactElement {
         dice.current.quaternion.copy(cannonBody.current.quaternion as unknown as THREE.Quaternion);
       }
 
+      // サイコロの位置を制限（万が一画面外に行ってしまった場合の安全策）
+      if (dice.current) {
+        const pos = dice.current.position;
+        if (Math.abs(pos.x) > 3 || Math.abs(pos.z) > 3 || pos.y > 5 || pos.y < -1) {
+          resetDicePosition();
+        }
+      }
+
       // サイコロが止まったかチェック
       if (isRolling.current && cannonBody.current) {
         const velocity = cannonBody.current.velocity;
         const angularVelocity = cannonBody.current.angularVelocity;
 
         // 速度と角速度が小さくなったらサイコロが止まったと判断
-        if (velocity.normalize() < 0.1 && angularVelocity.normalize() < 0.1) {
+        if (velocity.length() < 0.05 && angularVelocity.length() < 0.05) {
           isRolling.current = false;
-          const value = getDiceValue();
-          if (value !== null) {
-            setResult(`結果: ${value}`);
-          }
+          setMessage('端末を振るとサイコロが転がります');
         }
       }
 
@@ -238,43 +291,48 @@ export default function DiceApp(): React.ReactElement {
     render();
   };
 
+  // サイコロの位置をリセット
+  const resetDicePosition = (): void => {
+    if (cannonBody.current) {
+      cannonBody.current.position.set(0, 0, 0);
+      cannonBody.current.velocity.set(0, 0, 0);
+      cannonBody.current.angularVelocity.set(0, 0, 0);
+      isRolling.current = false;
+    }
+  };
+
   // サイコロを振る関数
   const rollDice = (): void => {
     if (!cannonBody.current || isRolling.current || !isSensorAvailable) return;
 
     isRolling.current = true;
-    setResult('振っています...');
+    setMessage('サイコロが転がっています...');
 
     // サイコロの位置を初期化
-    cannonBody.current.position.set(0, 3, 0);
+    cannonBody.current.position.set(0, 0, 0);
     cannonBody.current.velocity.set(0, 0, 0);
     cannonBody.current.angularVelocity.set(0, 0, 0);
 
-    // 加速度センサーからの力を加える
-    const forceMagnitude = 5; // 力の大きさの倍率
-    const impulse = new CANNON.Vec3(
-      lastAcceleration.current.x * forceMagnitude,
-      lastAcceleration.current.y * forceMagnitude,
-      lastAcceleration.current.z * forceMagnitude
-    );
+    // 完全にランダムな力を加える
+    const minUpwardForce = 5;  // 最小上向きの力
+    const maxUpwardForce = 8;  // 最大上向きの力
+    const horizontalForce = 3; // 水平方向の力の最大値
 
-    // 力が小さすぎる場合はランダムな力を加える
-    // if (impulse.normalize() < 1) {
-    //   impulse.set(
-    //     (Math.random() - 0.5) * 3,
-    //     Math.random() * 3,
-    //     (Math.random() - 0.5) * 3
-    //   );
-    // }
+    // 上向きには常に強い力を、水平方向にはランダムな力を加える
+    const impulse = new CANNON.Vec3(
+      (Math.random() * 2 - 1) * horizontalForce, // -3.0〜3.0の範囲
+      minUpwardForce + Math.random() * (maxUpwardForce - minUpwardForce), // 5.0〜8.0の範囲
+      (Math.random() * 2 - 1) * horizontalForce  // -3.0〜3.0の範囲
+    );
 
     cannonBody.current.applyImpulse(impulse);
 
-    // 加速度の回転成分から回転力も加える
-    const torqueMagnitude = 2;
+    // 回転力も完全にランダムに加える
+    const torqueMagnitude = 1.5; // 回転力の大きさ
     const angularImpulse = new CANNON.Vec3(
-      lastAcceleration.current.y * torqueMagnitude,
-      lastAcceleration.current.z * torqueMagnitude,
-      lastAcceleration.current.x * torqueMagnitude
+      (Math.random() * 2 - 1) * torqueMagnitude,
+      (Math.random() * 2 - 1) * torqueMagnitude,
+      (Math.random() * 2 - 1) * torqueMagnitude
     );
 
     cannonBody.current.applyTorque(angularImpulse);
@@ -285,15 +343,12 @@ export default function DiceApp(): React.ReactElement {
       <View style={styles.glContainer}>
         <GLView style={styles.gl} onContextCreate={onContextCreate} />
       </View>
-      <Text style={styles.result}>{result}</Text>
+      <Text style={styles.message}>{message}</Text>
       {!isSensorAvailable && (
         <Text style={styles.warning}>
-          加速度センサーが使用できません。ランダムな動きで代用します。
+          加速度センサーが使用できません。
         </Text>
       )}
-      <TouchableOpacity style={styles.button} onPress={rollDice}>
-        <Text style={styles.buttonText}>サイコロを振る</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -301,22 +356,24 @@ export default function DiceApp(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#222',
     alignItems: 'center',
     justifyContent: 'center',
   },
   glContainer: {
     width: '100%',
-    height: '70%',
+    height: '80%',
     overflow: 'hidden',
   },
   gl: {
     flex: 1,
   },
-  result: {
-    fontSize: 24,
+  message: {
+    fontSize: 18,
     color: 'white',
     marginVertical: 20,
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
   warning: {
     fontSize: 14,
@@ -324,15 +381,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     paddingHorizontal: 20,
-  },
-  button: {
-    backgroundColor: '#4285F4',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
+  }
 });
