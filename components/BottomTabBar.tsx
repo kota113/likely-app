@@ -89,10 +89,11 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     padding: 8,
-    borderRadius: 9999,
+    borderRadius: 100,
   },
   activeIconContainer: {
     backgroundColor: 'rgba(79, 70, 229, 0.1)',
+    borderRadius: 100
   },
   label: {
     fontSize: 12,

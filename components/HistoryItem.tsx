@@ -80,7 +80,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({ item, index }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,

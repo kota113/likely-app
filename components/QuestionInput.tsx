@@ -127,7 +127,7 @@ export const QuestionInput: React.FC<QuestionInputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
     shadowColor: '#000',

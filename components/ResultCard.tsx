@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   questionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
