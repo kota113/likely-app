@@ -11,11 +11,11 @@
   "dependencies": {
     "cannon-es": "^0.20.0",
     "expo": "~52.0.37",
+    "expo-sensors": "^14.0.2",
     "expo-status-bar": "~2.0.1",
     "expo-three": "^8.0.0",
     "react": "18.3.1",
-    "react-native": "0.76.7",
-    "three": "^0.173.0"
+    "react-native": "0.76.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
