@@ -4,6 +4,7 @@ import {Keyboard, TouchableOpacity, View,} from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons';
 import {startVoiceRecognition} from '../utils/helpers';
 import {Button, Text, XStack} from "tamagui";
+import LottieView from 'lottie-react-native';
 
 interface InputFieldProps {
   onInputSubmit: (text: string) => void;
@@ -52,9 +53,27 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <>
       <Text textAlign={"center"} fontWeight={"bold"} fontSize={30} marginBottom={25}>なにで迷ってますか？</Text>
-      <TouchableOpacity>
-        <MaterialIcons name={'mic'} size={82} backgroundColor={'#3f785c'} color={'white'}
-                       style={{padding: 19, borderRadius: 100}}/>
+      <TouchableOpacity onPress={handleVoiceRecognition}>
+        <View style={{
+          height: 115,
+          backgroundColor: '#3f785c',
+          width: 115,
+          borderRadius: 100,
+          overflow: 'hidden',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          {isRecording ? (
+            <LottieView
+              source={require('../assets/animations/voice-recognizing.json')}
+              autoPlay
+              loop
+              style={{width: '100%', height: '100%'}}
+            />
+          ) : (
+            <MaterialIcons name={'mic'} size={80} color={'white'}/>
+          )}
+        </View>
       </TouchableOpacity>
       <Button
         icon={

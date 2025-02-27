@@ -2,6 +2,7 @@ import {getHistory} from "../utils/api";
 import {HistoryItem} from "../utils/types";
 import {useEffect, useState} from "react";
 import HistoryCard from "./HistoryCard";
+import {Text} from "tamagui";
 
 export default function HistoryItems() {
   const [history, setHistory] = useState<HistoryItem[]>([]);

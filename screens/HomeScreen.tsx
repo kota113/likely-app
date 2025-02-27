@@ -108,6 +108,14 @@ export default function HomeScreen() {
           )}
         >
           <View style={styles.sheetContent}>
+            <Animated.Text style={[{
+              fontWeight: 400,
+              fontSize: 17,
+              marginLeft: 10,
+              marginBottom: 14
+            }, {opacity: animatedOpacity}]}>
+              運の履歴
+            </Animated.Text>
             <HistoryItems/>
           </View>
         </Animated.ScrollView>
