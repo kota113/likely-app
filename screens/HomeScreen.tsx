@@ -1,23 +1,31 @@
 import * as React from "react";
-import {Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {useEffect, useRef} from "react";
+import {Animated, Dimensions, ScrollView, StyleSheet, Text, View} from "react-native";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import InputField from "../components/InputField";
 import HistoryItems from "../components/HistoryItems";
-import {HomeScrollContext, HomeScrollProvider, useHomeScrollContext} from "../contexts/HomeScrollContext";
-import {useEffect, useRef} from "react";
-import {Button} from "tamagui";
+import {useHomeScrollContext} from "../contexts/HomeScrollContext";
+import {List} from "@tamagui/lucide-icons";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 // ボトムシートの peek 部分（タブバー上に見せる高さ）
 const BOTTOM_SHEET_PEEK = 150;
 
 export default function HomeScreen() {
-  const [scrollState, setScrollState] = useHomeScrollContext();
+  const [_, setScrollState] = useHomeScrollContext();
   const scrollViewRef = useRef<React.ElementRef<typeof Animated.ScrollView>>(null);
   const bottomTabBarHeight = useBottomTabBarHeight();
   const scrollY = React.useRef(new Animated.Value(0)).current;
   // 中央コンテンツの下端位置（onLayout で取得）
   const [centralBottom, setCentralBottom] = React.useState(0);
+
+  const scrollToTop = () => {
+    (scrollViewRef.current as ScrollView || null)?.scrollTo({ y: 0, animated: true });
+  };
+
+  useEffect(() => {
+    setScrollState({scrollToTop})
+  }, []);
 
   // 中央コンテンツの下端が中央コンテンツの onLayout で取得される
   // 例: y + height を centralBottom として保存
@@ -57,14 +65,6 @@ export default function HomeScreen() {
     });
     return () => scrollY.removeListener(id);
   }, [fadeRange, disableCentral, scrollY]);
-
-  const scrollToTop = () => {
-    (scrollViewRef.current as ScrollView || null)?.scrollTo({ y: 0, animated: true });
-  };
-
-  useEffect(() => {
-    setScrollState({scrollToTop})
-  }, []);
 
   return (
       <View style={styles.container}>
@@ -108,14 +108,18 @@ export default function HomeScreen() {
           )}
         >
           <View style={styles.sheetContent}>
-            <Animated.Text style={[{
-              fontWeight: 400,
-              fontSize: 17,
+            <Animated.View style={[{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
               marginLeft: 10,
               marginBottom: 14
             }, {opacity: animatedOpacity}]}>
-              運の履歴
-            </Animated.Text>
+              <List size={24} color={"black"}/>
+              <Text style={{fontWeight: 400, fontSize: 17, marginBottom: 5, marginLeft: 3}}>
+                運の履歴
+              </Text>
+            </Animated.View>
             <HistoryItems/>
           </View>
         </Animated.ScrollView>

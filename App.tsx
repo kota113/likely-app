@@ -7,7 +7,7 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {createTamagui, TamaguiProvider} from "tamagui";
 import {config} from "@tamagui/config/v3";
 import HomeScreen from "./screens/HomeScreen";
-import CalendarScreen from "./screens/CalendarScreen";
+import JournalScreen from "./screens/JournalScreen";
 import {StatusBar, TouchableOpacity} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {HomeScrollProvider, useHomeScrollContext} from "./contexts/HomeScrollContext";
@@ -30,7 +30,7 @@ export default function App() {
                 headerShown: false,
                 tabBarButton: () => {
                   const navigation = useNavigation()
-                  const [{scrollToTop}, setScrollState] = useHomeScrollContext();
+                  const [{scrollToTop}] = useHomeScrollContext();
                   return (
                     <TouchableOpacity
                       style={{
@@ -55,7 +55,7 @@ export default function App() {
                   )
                 },
               }}/>
-              <Tab.Screen name="カレンダー" component={CalendarScreen}/>
+              <Tab.Screen name="カレンダー" component={JournalScreen}/>
             </Tab.Navigator>
           </NavigationContainer>
         </GestureHandlerRootView>

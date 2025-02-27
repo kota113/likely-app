@@ -5,6 +5,7 @@ import {MaterialIcons} from '@expo/vector-icons';
 import {startVoiceRecognition} from '../utils/helpers';
 import {Button, Text, XStack} from "tamagui";
 import LottieView from 'lottie-react-native';
+import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 
 interface InputFieldProps {
   onInputSubmit: (text: string) => void;
@@ -15,12 +16,14 @@ const InputField: React.FC<InputFieldProps> = ({
                                                  onInputSubmit,
                                                  placeholder = '何に迷ってますか？'
                                                }) => {
+  const [{scrollToTop}] = useHomeScrollContext();
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
 
   // 音声認識のシミュレーション
   const handleVoiceRecognition = async () => {
+    scrollToTop()
     setIsRecording(true);
     try {
       const recognizedText = await startVoiceRecognition();
