@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CalendarView} from '../components/CalendarView';
 import {getJournalEntries} from '../utils/api';
 import {JournalEntry} from '../utils/types';
@@ -91,62 +91,58 @@ export default function JournalScreen() {
     : entries;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground
-        // source={require('../assets/background.png')} // モック: 実際のパスに置き換える
-        style={styles.background}
-        resizeMode="cover"
-      >
-        <View style={styles.content}>
-          <View style={styles.headerCard}>
-            <Text style={styles.headerTitle}>運日記</Text>
-            <Text style={styles.headerSubtitle}>あなたの運の記録をカレンダーで確認</Text>
-          </View>
+    <View
+      style={{flex: 1}}
+    >
+      <View style={styles.content}>
+        <View style={styles.headerCard}>
+          <Text style={styles.headerTitle}>運日記</Text>
+          <Text style={styles.headerSubtitle}>あなたの運の記録をカレンダーで確認</Text>
+        </View>
 
-          <CalendarView
-            year={year}
-            month={month}
-            entries={entries}
-            onMonthChange={handleMonthChange}
-            onDayPress={handleDayPress}
-          />
+        <CalendarView
+          year={year}
+          month={month}
+          entries={entries}
+          onMonthChange={handleMonthChange}
+          onDayPress={handleDayPress}
+        />
 
-          <View style={styles.entriesContainer}>
-            <View style={styles.entriesHeader}>
-              <Text style={styles.entriesTitle}>
-                {selectedDate
-                  ? `${formatDate(selectedDate)}の記録`
-                  : '最近の運の記録'}
-              </Text>
-              {!selectedDate && (
-                <TouchableOpacity style={styles.viewAllButton}>
-                  <Text style={styles.viewAllText}>すべて見る</Text>
-                  <ChevronRight width={14} height={14} stroke="#4F46E5" />
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {filteredEntries.length > 0 ? (
-              <FlatList
-                data={filteredEntries}
-                renderItem={renderJournalEntry}
-                keyExtractor={(item) => item.id}
-                style={styles.entriesList}
-                contentContainerStyle={styles.entriesListContent}
-              />
-            ) : (
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                  {selectedDate
-                    ? 'この日の記録はありません'
-                    : '記録がありません'}
-                </Text>
-              </View>
+        <View style={styles.entriesContainer}>
+          <View style={styles.entriesHeader}>
+            <Text style={styles.entriesTitle}>
+              {selectedDate
+                ? `${formatDate(selectedDate)}の記録`
+                : '最近の運の記録'}
+            </Text>
+            {!selectedDate && (
+              <TouchableOpacity style={styles.viewAllButton}>
+                <Text style={styles.viewAllText}>すべて見る</Text>
+                <ChevronRight width={14} height={14} stroke="#4F46E5" />
+              </TouchableOpacity>
             )}
           </View>
+
+          {filteredEntries.length > 0 ? (
+            <FlatList
+              data={filteredEntries}
+              renderItem={renderJournalEntry}
+              keyExtractor={(item) => item.id}
+              style={styles.entriesList}
+              contentContainerStyle={styles.entriesListContent}
+            />
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                {selectedDate
+                  ? 'この日の記録はありません'
+                  : '記録がありません'}
+              </Text>
+            </View>
+          )}
         </View>
-      </ImageBackground>
-    </SafeAreaView>
+      </View>
+    </View>
   );
 };
 
