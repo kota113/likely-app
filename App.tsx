@@ -1,18 +1,25 @@
 // App.tsx
 import * as React from 'react';
 import {SafeAreaProvider, useSafeAreaInsets} from "react-native-safe-area-context"
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {createTamagui, TamaguiProvider} from "tamagui";
 import {config} from "@tamagui/config/v3";
 import HomeScreen from "./screens/HomeScreen";
 import JournalScreen from "./screens/JournalScreen";
-import {StatusBar, TouchableOpacity, View} from "react-native";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {HomeScrollProvider, useHomeScrollContext} from "./contexts/HomeScrollContext";
+import {StatusBar, View} from "react-native";
+import {HomeScrollProvider} from "./contexts/HomeScrollContext";
+import DecideScreen from "./screens/DecideScreen";
+import {BottomTabBar} from "./components/BottomBar";
 
-const Tab = createBottomTabNavigator();
+export type RootTabParamList = {
+  Home: undefined;
+  Decide: undefined;
+  Journal: undefined;
+  History: undefined;
+};
+const Tab = createBottomTabNavigator<RootTabParamList>();
 const appConfig = createTamagui(config)
 
 const Navigation = () => {
@@ -20,39 +27,13 @@ const Navigation = () => {
   return (
     <View style={{flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom}}>
       <NavigationContainer>
-        <Tab.Navigator>
-          <Tab.Screen name="Home" component={HomeScreen} options={{headerShown: false, tabBarLabel: "ホーム"}}/>
-          <Tab.Screen name="decide" component={() => null} options={{
-            tabBarLabel: "決断する",
-            headerShown: false,
-            tabBarButton: () => {
-              const navigation = useNavigation()
-              const [{scrollToTop}] = useHomeScrollContext();
-              return (
-                <TouchableOpacity
-                  style={{
-                    marginHorizontal: "auto",
-                    padding: 20,
-                    backgroundColor: "black",
-                    borderRadius: 50,
-                    height: 70,
-                    width: 70,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: -25
-                  }}
-                  onPress={() => {
-                    // @ts-ignore
-                    navigation.navigate("Home")
-                    scrollToTop()
-                  }}
-                >
-                  <MaterialCommunityIcons name={"dice-5-outline"} size={32} color={"#FFFFFF"}/>
-                </TouchableOpacity>
-              )
-            },
+        <Tab.Navigator tabBar={props => <BottomTabBar {...props} />}>
+          <Tab.Screen name="Home" component={HomeScreen} options={{headerShown: false, title: "ホーム"}}/>
+          <Tab.Screen name="Decide" component={DecideScreen} options={{
+            title: "運に任せる",
+            headerShown: false
           }}/>
-          <Tab.Screen name="Journal" options={{tabBarLabel: "運日記", headerShown: false}} component={JournalScreen}/>
+          <Tab.Screen name="Journal" options={{title: "運日記", headerShown: false}} component={JournalScreen}/>
         </Tab.Navigator>
       </NavigationContainer>
     </View>

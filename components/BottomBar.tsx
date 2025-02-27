@@ -1,108 +1,127 @@
-// components/BottomBar.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Calendar, Dice5, Home} from "@tamagui/lucide-icons";
+import {View} from "tamagui"
+import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 
-interface BottomBarProps {
-  activeTab: string;
-  onTabPress: (tabName: string) => void;
-}
+export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+  const insets = useSafeAreaInsets();
+  const [{scrollToTop: scrollHomeToTop}] = useHomeScrollContext()
 
-const BottomBar: React.FC<BottomBarProps> = ({ activeTab, onTabPress }) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.tabButton}
-        onPress={() => onTabPress('Home')}
-        accessibilityLabel="ホーム画面"
-      >
-        <Ionicons
-          name={activeTab === 'Home' ? 'home' : 'home-outline'}
-          size={24}
-          color={activeTab === 'Home' ? '#007AFF' : '#8E8E93'}
-        />
-        <Text style={[
-          styles.tabLabel,
-          { color: activeTab === 'Home' ? '#007AFF' : '#8E8E93' }
-        ]}>
-          ホーム
-        </Text>
-      </TouchableOpacity>
+    <View style={[
+      styles.container,
+      { paddingBottom: insets.bottom > 0 ? insets.bottom : 16 }
+    ]}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label = options.title || route.name;
 
-      <TouchableOpacity
-        style={styles.diceButton}
-        onPress={() => onTabPress('Decision')}
-        accessibilityLabel="運任せボタン"
-      >
-        <View style={styles.diceCircle}>
-          <Ionicons name="dice" size={32} color="#FFFFFF" />
-        </View>
-        <Text style={styles.diceLabel}>運任せ</Text>
-      </TouchableOpacity>
+        const isFocused = state.index === index;
 
-      <TouchableOpacity
-        style={styles.tabButton}
-        onPress={() => onTabPress('Calendar')}
-        accessibilityLabel="カレンダー画面"
-      >
-        <Ionicons
-          name={activeTab === 'Calendar' ? 'calendar' : 'calendar-outline'}
-          size={24}
-          color={activeTab === 'Calendar' ? '#007AFF' : '#8E8E93'}
-        />
-        <Text style={[
-          styles.tabLabel,
-          { color: activeTab === 'Calendar' ? '#007AFF' : '#8E8E93' }
-        ]}>
-          カレンダー
-        </Text>
-      </TouchableOpacity>
+        const onPress = () => {
+          if (route.name === 'Decide') {
+            navigation.navigate('Home')
+            scrollHomeToTop()
+            return
+          }
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        // タブアイコンの選択
+        const renderIcon = () => {
+          const iconColor = isFocused ? '#4F46E5' : '#9CA3AF';
+          const size = 20;
+
+          switch (route.name) {
+            case 'Home':
+              return <Home stroke={iconColor} width={size} height={size} />;
+            case 'Journal':
+              return <Calendar stroke={iconColor} width={size} height={size} />;
+            case 'Decide':
+              return <View
+                padding={20}
+                marginTop={-40}
+                borderRadius={100}
+                backgroundColor={"#4F46E5"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                <Dice5
+                  color={"#ffffff"}
+                />
+              </View>;
+            default:
+              return null;
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            onPress={onPress}
+            style={styles.tabButton}
+          >
+            <View style={[
+              styles.iconContainer,
+              isFocused && styles.activeIconContainer
+            ]}>
+              {renderIcon()}
+            </View>
+            <Text style={[
+              styles.label,
+              isFocused && styles.activeLabel
+            ]}>
+              {label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
 
+// todo: インラインCSSに変更
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: 80,
-    backgroundColor: '#F8F8F8',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    paddingBottom: 20, // iPhoneの場合はSafe Areaの考慮が必要
-    alignItems: 'center',
     justifyContent: 'space-around',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(229, 231, 235, 0.5)',
+    paddingTop: 8,
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 8,
   },
-  tabLabel: {
+  iconContainer: {
+    padding: 8,
+    borderRadius: 100,
+  },
+  activeIconContainer: {
+    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+    borderRadius: 100
+  },
+  label: {
     fontSize: 12,
     marginTop: 4,
+    fontWeight: '500',
+    color: '#9CA3AF',
   },
-  diceButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  activeLabel: {
+    color: '#4F46E5',
   },
-  diceCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#007AFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  diceLabel: {
-    fontSize: 12,
-    color: '#007AFF',
-    marginTop: 4,
-  }
 });
-
-export default BottomBar;

@@ -9,7 +9,7 @@ import {List} from "@tamagui/lucide-icons";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 // ボトムシートの peek 部分（タブバー上に見せる高さ）
-const BOTTOM_SHEET_PEEK = 150;
+const BOTTOM_SHEET_PEEK = 190;
 
 export default function HomeScreen() {
   const [_, setScrollState] = useHomeScrollContext();

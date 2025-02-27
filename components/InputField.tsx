@@ -1,11 +1,14 @@
 // components/InputField.tsx
 import React, {useState} from 'react';
-import {Keyboard, TouchableOpacity, View,} from 'react-native';
+import {Alert, Keyboard, TouchableOpacity, View,} from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons';
 import {startVoiceRecognition} from '../utils/helpers';
 import {Button, Text, XStack} from "tamagui";
 import LottieView from 'lottie-react-native';
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
+import * as ImagePicker from 'expo-image-picker';
+import {Check, X} from "@tamagui/lucide-icons";
+
 
 interface InputFieldProps {
   onInputSubmit: (text: string) => void;
@@ -20,6 +23,24 @@ const InputField: React.FC<InputFieldProps> = ({
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleTakePhoto = async () => {
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+
+      if (result.canceled) return;
+      const assets = result.assets?.[0]
+      if (assets) {
+        setSelectedImage(assets.uri);
+      }
+    } catch (error) {
+      Alert.alert('エラーが発生しました');
+    }
+  };
 
   // 音声認識のシミュレーション
   const handleVoiceRecognition = async () => {
@@ -55,7 +76,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <>
-      <Text textAlign={"center"} fontWeight={"bold"} fontSize={30} marginBottom={25}>なにで迷ってますか？</Text>
+      <Text textAlign={"center"} fontWeight={"bold"} fontSize={30} marginBottom={25}>{placeholder}</Text>
       <TouchableOpacity onPress={handleVoiceRecognition}>
         <View style={{
           height: 115,
@@ -78,20 +99,37 @@ const InputField: React.FC<InputFieldProps> = ({
           )}
         </View>
       </TouchableOpacity>
-      <Button
-        icon={
-          <XStack justifyContent={"center"} alignItems={"center"}>
-            <MaterialIcons name={'camera-alt'} size={24} color={'black'}/>
-          </XStack>
-        }
-        justifyContent={"center"}
-        marginTop={"$4"}
-        size={"$5"}
-        paddingHorizontal={"$8"}
-        paddingVertical={0}
-      >
-        カメラ・画像
-      </Button>
+      <XStack alignItems={"center"} paddingTop={"$4"}>
+        <Button
+          icon={
+            <XStack justifyContent={"center"} alignItems={"center"}>
+              {selectedImage ? (<Check size={"$1"}/>)
+                : (<MaterialIcons name={'camera-alt'} size={24} color={'black'}/>)}
+            </XStack>
+          }
+          justifyContent={"center"}
+          size={"$5"}
+          paddingHorizontal={"$8"}
+          paddingVertical={0}
+          onPress={handleTakePhoto}
+          themeInverse={!!selectedImage}
+          borderBottomRightRadius={selectedImage ? 0 : undefined}
+          borderTopRightRadius={selectedImage ? 0 : undefined}
+        >
+          {selectedImage ? "撮影済み" : "写真を撮影"}
+        </Button>
+        {selectedImage && (
+          <Button
+            justifyContent={"center"}
+            size={"$5"}
+            paddingHorizontal={"$3"}
+            paddingVertical={0} icon={<X size={"$1"}/>}
+            borderBottomLeftRadius={0}
+            borderTopLeftRadius={0}
+            onPress={() => setSelectedImage(null)}
+          />
+        )}
+      </XStack>
     </>
   );
 };
