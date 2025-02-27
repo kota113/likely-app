@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
-import { Mic, Send, ChevronDown } from 'react-native-feather';
-import { InputMode } from '../utils/types';
+import React, {useState} from 'react';
+import {ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import {ChevronDown, Mic, Send} from '@tamagui/lucide-icons';
+import {InputMode} from '../utils/types';
 
 interface QuestionInputProps {
   onSubmit: (question: string) => void;

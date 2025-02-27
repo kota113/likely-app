@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Coffee } from 'react-native-feather';
-import { Evaluation } from '../utils/types';
+import {StyleSheet, Text, View} from 'react-native';
+import {Coffee} from '@tamagui/lucide-icons';
+import {Evaluation} from '../utils/types';
 
 interface ResultCardProps {
   question: string;

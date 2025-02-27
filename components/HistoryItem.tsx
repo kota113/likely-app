@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Calendar, Star } from 'react-native-feather';
-import { HistoryItem as HistoryItemType } from '../utils/types';
+import {StyleSheet, Text, View} from 'react-native';
+import {Calendar, Star} from '@tamagui/lucide-icons';
+import {HistoryItem as HistoryItemType} from '../utils/types';
 
 interface HistoryItemProps {
   item: HistoryItemType;

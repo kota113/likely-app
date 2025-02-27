@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ImageBackground } from 'react-native';
-import { useDecision } from '../hooks/useDecision';
-import { useVoiceInput } from '../hooks/useVoiceInput';
-import { QuestionInput } from '../components/QuestionInput';
-import { OptionsList } from '../components/OptionsList';
-import { ResultCard } from '../components/ResultCard';
-import { EvaluationButtons } from '../components/EvaluationButtons';
-import { getRecentDecisions } from '../utils/api';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useDecision} from '../hooks/useDecision';
+import {useVoiceInput} from '../hooks/useVoiceInput';
+import {QuestionInput} from '../components/QuestionInput';
+import {OptionsList} from '../components/OptionsList';
+import {ResultCard} from '../components/ResultCard';
+import {EvaluationButtons} from '../components/EvaluationButtons';
+import {getRecentDecisions} from '../utils/api';
 import {Decision, Evaluation} from '../utils/types';
-import { ChevronRight } from 'react-native-feather';
+import {ChevronRight} from '@tamagui/lucide-icons';
 
 export const DecideScreen: React.FC = () => {
   const {

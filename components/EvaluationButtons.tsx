@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { Check, X } from 'react-native-feather';
-import { Evaluation } from '../utils/types';
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Check, X} from '@tamagui/lucide-icons';
+import {Evaluation} from '../utils/types';
 
 interface EvaluationButtonsProps {
   onEvaluate: (evaluation: Evaluation) => void;

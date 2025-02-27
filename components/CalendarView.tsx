@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { ChevronDown } from 'react-native-feather';
-import { JournalEntry } from '../utils/types';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ChevronDown} from '@tamagui/lucide-icons';
+import {JournalEntry} from '../utils/types';
 
 const DAYS_OF_WEEK = ['日', '月', '火', '水', '木', '金', '土'];
 

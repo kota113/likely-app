@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator
-} from 'react-native';
-import { Shuffle } from 'react-native-feather';
+import {ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Shuffle} from '@tamagui/lucide-icons';
 
 interface OptionsListProps {
   question: string;

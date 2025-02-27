@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
-import { CalendarView } from '../components/CalendarView';
-import { getJournalEntries } from '../utils/api';
-import { JournalEntry } from '../utils/types';
-import { Calendar, ChevronRight } from 'react-native-feather';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {CalendarView} from '../components/CalendarView';
+import {getJournalEntries} from '../utils/api';
+import {JournalEntry} from '../utils/types';
+import {Calendar, ChevronRight} from '@tamagui/lucide-icons';
 
 export const JournalScreen: React.FC = () => {
   const currentDate = new Date();
