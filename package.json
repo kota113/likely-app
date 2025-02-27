@@ -9,13 +9,30 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.2",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/datetimepicker": "8.2.0",
+    "@react-native-community/slider": "4.5.5",
+    "@react-navigation/bottom-tabs": "latest",
+    "@react-navigation/native": "latest",
+    "@react-navigation/native-stack": "latest",
+    "@react-navigation/stack": "^7.1.1",
+    "@supabase/supabase-js": "latest",
+    "@tamagui/alert-dialog": "1.115.5",
+    "@tamagui/babel-plugin": "1.115.5",
+    "@tamagui/config": "1.115.5",
+    "@tamagui/core": "1.115.5",
+    "@tamagui/lucide-icons": "1.115.5",
+    "@tamagui/portal": "1.115.5",
     "cannon-es": "^0.20.0",
     "expo": "~52.0.37",
     "expo-sensors": "^14.0.2",
     "expo-status-bar": "~2.0.1",
     "expo-three": "^8.0.0",
+    "lottie-react-native": "^5.0.1",
     "react": "18.3.1",
-    "react-native": "0.76.7"
+    "react-native": "0.76.7",
+    "tamagui": "1.115.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
