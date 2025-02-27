@@ -1,57 +1,103 @@
 // App.tsx
 import * as React from 'react';
-import { StyleSheet, View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Animated,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+// ボトムシートの peek 部分（タブバー上に見せる高さ）
+const BOTTOM_SHEET_PEEK = 200;
 
 function HomeScreen() {
-  // スクロールオフセット
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const scrollY = React.useRef(new Animated.Value(0)).current;
-  // 中央要素のレイアウトからフェードアウトの閾値を決定する（初期値は仮の値）
-  const [fadeThreshold, setFadeThreshold] = React.useState(0);
+  // 中央コンテンツの下端位置（onLayout で取得）
+  const [centralBottom, setCentralBottom] = React.useState(0);
 
-  // scrollY に応じた opacity のアニメーション
+  // 中央コンテンツの下端が中央コンテンツの onLayout で取得される
+  // 例: y + height を centralBottom として保存
+  // ※ 中央コンテンツは screen 全体の中央に配置されているため、centralBottom は絶対座標です
+
+  // effectiveFadeThreshold:
+  // bottomSheet の初期表示時の上端位置と中央コンテンツの下端の差分が、
+  // bottomSheet を上に引いたときに中央コンテンツが完全に隠れる scrollY 値となる
+  const effectiveFadeThreshold =
+    (SCREEN_HEIGHT - bottomTabBarHeight - BOTTOM_SHEET_PEEK) - centralBottom;
+
+  // effectiveFadeThreshold が 0 以下の場合、デフォルトとして 1 を利用（divide by zero を防ぐ）
+  const fadeRange = effectiveFadeThreshold > 0 ? effectiveFadeThreshold : 1;
+
+  // scrollY に応じた中央コンテンツの opacity
   const animatedOpacity = scrollY.interpolate({
-    inputRange: [0, fadeThreshold],
+    inputRange: [0, fadeRange],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
+  // 中央コンテンツのタップを、fade が完了したら無効にする
+  const [disableCentral, setDisableCentral] = React.useState(false);
+  React.useEffect(() => {
+    const id = scrollY.addListener(({ value }) => {
+      if (value >= fadeRange && !disableCentral) {
+        setDisableCentral(true);
+      } else if (value < fadeRange && disableCentral) {
+        setDisableCentral(false);
+      }
+    });
+    return () => scrollY.removeListener(id);
+  }, [fadeRange, disableCentral, scrollY]);
+
   return (
     <View style={styles.container}>
-      {/* 中央に配置するマイクボタンとタイトル */}
-      <Animated.View
-        style={[styles.centralContent, { opacity: animatedOpacity }]}
-        onLayout={(event) => {
-          const { y, height } = event.nativeEvent.layout;
-          // 中央要素の下端までの位置を閾値とする
-          setFadeThreshold(y + height);
-        }}
+      {/* 中央コンテンツ用コンテナは flexbox で中央寄せ。
+          pointerEvents を "box-none"（または disableCentral で "none"）にして、
+          ボトムシートのタッチを妨げないようにします。 */}
+      <View
+        style={styles.centerContainer}
+        pointerEvents={disableCentral ? 'none' : 'box-none'}
       >
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-          <TouchableOpacity style={styles.micButton}>
+        <Animated.View
+          style={[styles.centralContent, { opacity: animatedOpacity }]}
+          onLayout={(event) => {
+            const { y, height } = event.nativeEvent.layout;
+            setCentralBottom(y + height);
+          }}
+        >
+          <TouchableOpacity
+            style={styles.micButton}
+            onPress={() => console.log('マイクボタン押下')}
+          >
             <Text style={styles.micText}>🎤</Text>
           </TouchableOpacity>
           <Text style={styles.title}>タイトル</Text>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </View>
 
-      {/* 画面下から引っ張るスクロール可能な要素 */}
+      {/* ボトムシート */}
       <Animated.ScrollView
-        showsVerticalScrollIndicator={false}
         style={styles.bottomSheet}
-        contentContainerStyle={styles.bottomSheetContentContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.bottomSheetContentContainer,
+          {
+            // bottomTabBarHeight を考慮して peek 部分を設定
+            paddingTop: SCREEN_HEIGHT - bottomTabBarHeight - BOTTOM_SHEET_PEEK,
+          },
+        ]}
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
       >
-        {/* ハンドル部分 */}
         <View style={styles.sheetHandle} />
-        {/* スクロールコンテンツ */}
         <View style={styles.sheetContent}>
           <Text>ここにスクロール可能なコンテンツを追加</Text>
           <Text style={{ marginTop: 20 }}>コンテンツ1</Text>
@@ -93,14 +139,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#eee',
   },
-  // 中央のコンテンツ（zIndex を 1 以上に設定）
-  centralContent: {
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
-    bottom: SCREEN_HEIGHT / 2,
+    top: 0,
     left: 0,
     right: 0,
+    bottom: 0,
+    zIndex: 2,
+  },
+  centralContent: {
     alignItems: 'center',
-    zIndex: 1,
   },
   micButton: {
     width: 80,
@@ -119,20 +170,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  // ボトムシートのスタイル
   bottomSheet: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+    zIndex: 1,
   },
   bottomSheetContentContainer: {
-    paddingTop: SCREEN_HEIGHT - 100,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    minHeight: SCREEN_HEIGHT + 100,
+    minHeight: SCREEN_HEIGHT + BOTTOM_SHEET_PEEK,
   },
   sheetHandle: {
     width: 40,
