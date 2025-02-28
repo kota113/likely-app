@@ -1,10 +1,11 @@
-import {Button, Text, View, XStack, YStack} from "tamagui";
+import {Text, View, XStack, YStack} from "tamagui";
 import {useState} from "react";
 import {Dice5} from "@tamagui/lucide-icons";
 import {CompositeNavigationProp, useNavigation} from "@react-navigation/native";
 import {BottomTabNavigationProp} from "@react-navigation/bottom-tabs";
 import {RootStackParamList, RootTabParamList} from "../components/Navigation";
 import {StackNavigationProp} from "@react-navigation/stack";
+import {TouchableOpacity} from "react-native";
 
 type DecideScreenNavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<RootTabParamList>,
@@ -40,7 +41,7 @@ export default function DecideScreen() {
             alignItems: 'center'
           }}>
             <Text fontSize={18} fontWeight="bold" color="#5e5ce6">
-              運任せアプリ
+              運任せにしよう！
             </Text>
           </View>
 
@@ -88,21 +89,26 @@ export default function DecideScreen() {
           ))}
 
           {/* Randomize Button */}
-          <Button
-            backgroundColor="#5e5ce6"
-            borderRadius={50}
-            height={56}
-            marginTop="auto"
-            marginBottom={16}
+          {/*todo: tamaguiにテーマを適用して、tamaguiのButtonを使う*/}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#5e5ce6',
+              borderRadius: 50,
+              height: 56,
+              marginTop: 'auto',
+              marginBottom: 16,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
             onPress={handleProceed}
           >
             <XStack alignItems="center">
-              <Dice5 color="white" size={20} style={{ marginRight: 8 }} />
-              <Text color="white" fontSize={16} fontWeight="600">
+              <Dice5 color="white" size={20} style={{marginRight: 8}}/>
+              <Text style={{color: 'white', fontSize: 16, fontWeight: '600'}}>
                 運に任せる
               </Text>
             </XStack>
-          </Button>
+          </TouchableOpacity>
         </YStack>
       }
     </View>
