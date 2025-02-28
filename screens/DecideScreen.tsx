@@ -35,10 +35,10 @@ export default function DecideScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const options = [
-    { id: 1, name: 'イタリアンレストラン' },
-    { id: 2, name: 'ラーメン屋' },
-    { id: 3, name: 'サラダボウル' },
-    { id: 4, name: 'お弁当' },
+    { id: 1, name: '中華そば' },
+    { id: 2, name: '特製中華そば' },
+    { id: 3, name: '味噌そば' },
+    { id: 4, name: '特製味噌そば' }
   ];
 
   const handleProceed = () => {
@@ -76,7 +76,7 @@ export default function DecideScreen() {
             elevation: 2,
           }}>
             <Text fontSize={16} textAlign="center" color={COLORS.text.primary}>
-              今日のランチはどこにしようか？
+              何のラーメンを食べようか
             </Text>
           </View>
 

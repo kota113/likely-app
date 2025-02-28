@@ -72,7 +72,7 @@ export default function DecisionResultScreen() {
           </Text>
 
           <Text fontSize={24} fontWeight="bold" color={COLORS.surface.light} marginBottom={16}>
-            お弁当
+            中華そば
           </Text>
 
           <TouchableOpacity
