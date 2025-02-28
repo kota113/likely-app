@@ -12,15 +12,16 @@ const appConfig = createTamagui(config)
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <TamaguiProvider config={appConfig}>
-        <HomeScrollProvider>
-        <StatusBar barStyle={"default"} translucent={true}/>
-        <GestureHandlerRootView>
-          <Navigation/>
-        </GestureHandlerRootView>
-        </HomeScrollProvider>
-      </TamaguiProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <SafeAreaProvider>
+        <TamaguiProvider config={appConfig}>
+          <HomeScrollProvider>
+            <StatusBar barStyle={"default"} translucent={true}/>
+            <Navigation/>
+            {/*<RollDiceScreen/>*/}
+          </HomeScrollProvider>
+        </TamaguiProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

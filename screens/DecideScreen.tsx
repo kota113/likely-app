@@ -24,7 +24,7 @@ export default function DecideScreen() {
   ];
 
   const handleProceed = () => {
-    // navigation.navigate("RollDice", {decisionId: ID_HERE})
+    navigation.navigate("RollDice", {decisionId: "ID_HERE"})
   };
   return (
     <View flex={1}>

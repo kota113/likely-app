@@ -9,6 +9,8 @@ import {View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import DecideScreen from "../screens/DecideScreen";
 import {createStackNavigator} from "@react-navigation/stack";
+import TempRollDiceScreen from "../screens/TempRollDiceScreen";
+import DecisionResultScreen from "../screens/DecisionResultScreen";
 
 export type RootTabParamList = {
   Home: undefined;
@@ -20,6 +22,7 @@ export type RootStackParamList = {
   HomeTabs: undefined;
   Decide: { query: string, imageUri: string | null };
   RollDice: { decisionId: string };
+  DecisionResult: { decisionId: string };
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -45,7 +48,8 @@ export const Navigation = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="HomeTabs" component={HomeTabs}/>
           <Stack.Screen name="Decide" component={DecideScreen} options={{headerShown: false}}/>
-          {/*<Stack.Screen name="RollDice" component={RollDiceAction} options={{headerShown: false}}/>*/}
+          <Stack.Screen name="RollDice" component={TempRollDiceScreen}/>
+          <Stack.Screen name="DecisionResult" component={DecisionResultScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </View>
