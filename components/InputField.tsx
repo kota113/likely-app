@@ -8,7 +8,15 @@ import LottieView from 'lottie-react-native';
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 import * as ImagePicker from 'expo-image-picker';
 import {Check, X} from "@tamagui/lucide-icons";
+import {CompositeNavigationProp, useNavigation} from "@react-navigation/native";
+import {BottomTabNavigationProp} from "@react-navigation/bottom-tabs";
+import {RootStackParamList, RootTabParamList} from "./Navigation";
+import {StackNavigationProp} from "@react-navigation/stack";
 
+type HomeScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<RootTabParamList, 'Home'>,
+  StackNavigationProp<RootStackParamList>
+>;
 
 interface InputFieldProps {
   onInputSubmit: (text: string) => void;
@@ -19,6 +27,7 @@ const InputField: React.FC<InputFieldProps> = ({
                                                  onInputSubmit,
                                                  placeholder = '何に迷ってますか？'
                                                }) => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const [{scrollToTop}] = useHomeScrollContext();
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -57,6 +66,10 @@ const InputField: React.FC<InputFieldProps> = ({
       console.error('Voice recognition error:', error);
     } finally {
       setIsRecording(false);
+      navigation.navigate('Decide', {
+        query: "test",
+        imageUri: null
+      });
     }
   };
 
@@ -76,7 +89,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <>
-      <Text textAlign={"center"} fontWeight={"bold"} fontSize={30} marginBottom={25}>{placeholder}</Text>
+      <Text textAlign={"center"} fontWeight={"bold"} fontSize={27} marginBottom={25}>{placeholder}</Text>
       <TouchableOpacity onPress={handleVoiceRecognition}>
         <View style={{
           height: 115,

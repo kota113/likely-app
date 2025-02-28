@@ -22,7 +22,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
         const isFocused = state.index === index;
 
         const onPress = () => {
-          if (route.name === 'Decide') {
+          if (route.name === 'DecideBtnEmptyScreen') {
             navigation.navigate('Home')
             scrollHomeToTop()
             return
@@ -48,7 +48,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
               return <Home stroke={iconColor} width={size} height={size} />;
             case 'Journal':
               return <Calendar stroke={iconColor} width={size} height={size} />;
-            case 'Decide':
+            case 'DecideBtnEmptyScreen':
               return <View
                 padding={20}
                 marginTop={-40}
