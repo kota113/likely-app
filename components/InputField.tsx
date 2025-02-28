@@ -1,9 +1,9 @@
 // components/InputField.tsx
 import React, {useState} from 'react';
-import {Alert, Keyboard, TouchableOpacity, View,} from 'react-native';
+import {Alert, Keyboard, TouchableOpacity} from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons';
 import {startVoiceRecognition} from '../utils/helpers';
-import {Button, Text, XStack} from "tamagui";
+import {Button, Text, View, XStack} from "tamagui";
 import LottieView from 'lottie-react-native';
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 import * as ImagePicker from 'expo-image-picker';
@@ -91,15 +91,16 @@ const InputField: React.FC<InputFieldProps> = ({
     <>
       <Text textAlign={"center"} fontWeight={"bold"} fontSize={27} marginBottom={25}>{placeholder}</Text>
       <TouchableOpacity onPress={handleVoiceRecognition}>
-        <View style={{
-          height: 115,
-          backgroundColor: '#3f785c',
-          width: 115,
-          borderRadius: 100,
-          overflow: 'hidden',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+        <View
+          height={115}
+          // todo: use background of tamagui theme
+          backgroundColor={'#7ebdac'}
+          width={115}
+          borderRadius={100}
+          overflow="hidden"
+          justifyContent="center"
+          alignItems="center"
+        >
           {isRecording ? (
             <LottieView
               source={require('../assets/animations/voice-recognizing.json')}
@@ -108,7 +109,7 @@ const InputField: React.FC<InputFieldProps> = ({
               style={{width: '100%', height: '100%'}}
             />
           ) : (
-            <MaterialIcons name={'mic'} size={80} color={'white'}/>
+            <MaterialIcons name={'mic'} size={73} color={'white'}/>
           )}
         </View>
       </TouchableOpacity>

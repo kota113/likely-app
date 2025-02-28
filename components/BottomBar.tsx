@@ -53,7 +53,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
                 padding={20}
                 marginTop={-40}
                 borderRadius={100}
-                backgroundColor={"#4F46E5"}
+                backgroundColor={"#1f454e"}
                 justifyContent={"center"}
                 alignItems={"center"}
               >
@@ -100,28 +100,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(229, 231, 235, 0.5)',
-    paddingTop: 8,
+    paddingVertical: 8,
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingTop: 6
   },
   iconContainer: {
-    padding: 8,
-    borderRadius: 100,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
   activeIconContainer: {
-    backgroundColor: 'rgba(79, 70, 229, 0.1)',
-    borderRadius: 100
+    backgroundColor: 'rgba(23,50,57,0.14)',
+    borderRadius: 10
   },
   label: {
     fontSize: 12,
     marginTop: 4,
     fontWeight: '500',
-    color: '#9CA3AF',
+    color: '#1f454e',
   },
   activeLabel: {
-    color: '#4F46E5',
+    color: '#173239',
   },
 });

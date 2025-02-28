@@ -1,11 +1,12 @@
 import * as React from "react";
 import {useEffect, useRef} from "react";
-import {Animated, Dimensions, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Animated, Dimensions, ScrollView, StyleSheet, Text} from "react-native";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import InputField from "../components/InputField";
 import HistoryItems from "../components/HistoryItems";
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 import {List} from "@tamagui/lucide-icons";
+import {View} from "tamagui"
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 // ボトムシートの peek 部分（タブバー上に見せる高さ）
@@ -67,7 +68,7 @@ export default function HomeScreen() {
   }, [fadeRange, disableCentral, scrollY]);
 
   return (
-      <View style={styles.container}>
+      <View style={styles.container} backgroundColor={"#efebd0"}>
         {/* 中央コンテンツ用コンテナは flexbox で中央寄せ。
           pointerEvents を "box-none"（または disableCentral で "none"）にして、
           ボトムシートのタッチを妨げないように */}
@@ -117,7 +118,7 @@ export default function HomeScreen() {
             }, {opacity: animatedOpacity}]}>
               <List size={24} color={"black"}/>
               <Text style={{fontWeight: 400, fontSize: 17, marginBottom: 5, marginLeft: 3}}>
-                運の履歴
+                決断の履歴
               </Text>
             </Animated.View>
             <HistoryItems/>
@@ -129,8 +130,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#eee'
+    flex: 1
   },
   centerContainer: {
     flex: 1,
@@ -141,8 +141,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 2,
-    // backgroundColor: "#fff8e7"
+    zIndex: 2
   },
   centralContent: {
     alignItems: 'center'
@@ -151,7 +150,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#4287f5',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -173,16 +171,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bottomSheetContentContainer: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     minHeight: SCREEN_HEIGHT + BOTTOM_SHEET_PEEK,
-  },
-  sheetHandle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#ccc',
-    borderRadius: 2.5,
-    alignSelf: 'center',
-    marginVertical: 10,
   },
   sheetContent: {
     padding: 16,

@@ -1,4 +1,4 @@
-import { View, Text } from "tamagui";
+import {Text, View} from "tamagui";
 import {HistoryItem} from "../utils/types";
 import {Feather, MaterialIcons} from "@expo/vector-icons";
 
@@ -15,7 +15,7 @@ export default function HistoryCard({item, index}: Props) {
 
   return (
     <View style={{
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f4ffff',
       borderRadius: 16,
       padding: 16,
       marginBottom: 12,
