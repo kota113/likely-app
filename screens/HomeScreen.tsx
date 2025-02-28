@@ -8,6 +8,24 @@ import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 import {List} from "@tamagui/lucide-icons";
 import {View} from "tamagui"
 
+// カラーパレット
+const COLORS = {
+  background: "#efebd0",
+  primary: "#1f454e",
+  secondary: "#ebcea6",
+  success: "#7ebdac",
+  error: "#e07a5f",
+  text: {
+    primary: "#1f454e",
+    secondary: "#4d6a72",
+    light: "#778f95",
+  },
+  surface: {
+    light: "#ffffff",
+    cream: "#f5f2e3",
+  }
+};
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 // ボトムシートの peek 部分（タブバー上に見せる高さ）
 const BOTTOM_SHEET_PEEK = 250;
@@ -68,63 +86,69 @@ export default function HomeScreen() {
   }, [fadeRange, disableCentral, scrollY]);
 
   return (
-      <View style={styles.container} backgroundColor={"#efebd0"}>
-        {/* 中央コンテンツ用コンテナは flexbox で中央寄せ。
+    <View style={styles.container} backgroundColor={COLORS.background}>
+      {/* 中央コンテンツ用コンテナは flexbox で中央寄せ。
           pointerEvents を "box-none"（または disableCentral で "none"）にして、
           ボトムシートのタッチを妨げないように */}
-        <View
-          style={styles.centerContainer}
-          pointerEvents={disableCentral ? 'none' : 'box-none'}
+      <View
+        style={styles.centerContainer}
+        pointerEvents={disableCentral ? 'none' : 'box-none'}
+      >
+        <Animated.View
+          style={[styles.centralContent, {
+            opacity: animatedOpacity,
+            transform: [{ scale: animatedScale }]
+          }]}
+          onLayout={(event) => {
+            const { y, height } = event.nativeEvent.layout;
+            setCentralBottom(y + height);
+          }}
         >
-          <Animated.View
-            style={[styles.centralContent, {
-              opacity: animatedOpacity,
-              transform: [{ scale: animatedScale }]
-            }]}
-            onLayout={(event) => {
-              const { y, height } = event.nativeEvent.layout;
-              setCentralBottom(y + height);
-            }}
-          >
-            <InputField onInputSubmit={() => {}}/>
-          </Animated.View>
-        </View>
-
-        {/* ボトムシート */}
-        <Animated.ScrollView
-          ref={scrollViewRef}
-          style={styles.bottomSheet}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.bottomSheetContentContainer,
-            {
-              // bottomTabBarHeight を考慮して peek 部分を設定
-              paddingTop: SCREEN_HEIGHT - bottomTabBarHeight - BOTTOM_SHEET_PEEK,
-            },
-          ]}
-          scrollEventThrottle={16}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-        >
-          <View style={styles.sheetContent}>
-            <Animated.View style={[{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              marginLeft: 10,
-              marginBottom: 14
-            }, {opacity: animatedOpacity}]}>
-              <List size={24} color={"black"}/>
-              <Text style={{fontWeight: 400, fontSize: 17, marginBottom: 5, marginLeft: 3}}>
-                決断の履歴
-              </Text>
-            </Animated.View>
-            <HistoryItems/>
-          </View>
-        </Animated.ScrollView>
+          <InputField onInputSubmit={() => {}}/>
+        </Animated.View>
       </View>
+
+      {/* ボトムシート */}
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        style={styles.bottomSheet}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.bottomSheetContentContainer,
+          {
+            // bottomTabBarHeight を考慮して peek 部分を設定
+            paddingTop: SCREEN_HEIGHT - bottomTabBarHeight - BOTTOM_SHEET_PEEK,
+          },
+        ]}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+      >
+        <View style={styles.sheetContent}>
+          <Animated.View style={[{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 10,
+            marginBottom: 14
+          }, {opacity: animatedOpacity}]}>
+            <List size={24} color={COLORS.primary}/>
+            <Text style={{
+              fontWeight: "400",
+              fontSize: 17,
+              marginBottom: 5,
+              marginLeft: 3,
+              color: COLORS.primary
+            }}>
+              決断の履歴
+            </Text>
+          </Animated.View>
+          <HistoryItems/>
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 }
 
@@ -153,14 +177,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
+    backgroundColor: COLORS.primary,
   },
   micText: {
     fontSize: 36,
-    color: '#fff',
+    color: COLORS.surface.light,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: COLORS.primary,
   },
   bottomSheet: {
     position: 'absolute',
@@ -171,7 +197,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bottomSheetContentContainer: {
-    // backgroundColor: '#fff',
     minHeight: SCREEN_HEIGHT + BOTTOM_SHEET_PEEK,
   },
   sheetContent: {
@@ -181,5 +206,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     marginTop: 20,
+    color: COLORS.text.primary,
   },
 });

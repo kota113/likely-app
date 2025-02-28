@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Alert, Keyboard, TouchableOpacity} from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons';
 import {startVoiceRecognition} from '../utils/helpers';
-import {Button, Text, View, XStack} from "tamagui";
+import {Button, Text, XStack} from "tamagui";
 import LottieView from 'lottie-react-native';
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
 import * as ImagePicker from 'expo-image-picker';
@@ -90,28 +90,33 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <>
       <Text textAlign={"center"} fontWeight={"bold"} fontSize={27} marginBottom={25}>{placeholder}</Text>
-      <TouchableOpacity onPress={handleVoiceRecognition}>
-        <View
-          height={115}
-          // todo: use background of tamagui theme
-          backgroundColor={'#7ebdac'}
-          width={115}
-          borderRadius={100}
-          overflow="hidden"
-          justifyContent="center"
-          alignItems="center"
-        >
-          {isRecording ? (
-            <LottieView
-              source={require('../assets/animations/voice-recognizing.json')}
-              autoPlay
-              loop
-              style={{width: '100%', height: '100%'}}
-            />
-          ) : (
-            <MaterialIcons name={'mic'} size={73} color={'white'}/>
-          )}
-        </View>
+      <TouchableOpacity
+        onPress={handleVoiceRecognition}
+        style={{
+          height: 115,
+          backgroundColor: '#7ebdac',
+          width: 115,
+          borderRadius: 100,
+          overflow: 'hidden',
+          justifyContent: 'center',
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 2},
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 5,
+        }}
+      >
+        {isRecording ? (
+          <LottieView
+            source={require('../assets/animations/voice-recognizing.json')}
+            autoPlay
+            loop
+            style={{width: '100%', height: '100%'}}
+          />
+        ) : (
+          <MaterialIcons name={'mic'} size={73} color={'white'}/>
+        )}
       </TouchableOpacity>
       <XStack alignItems={"center"} paddingTop={"$4"}>
         <Button
@@ -129,6 +134,13 @@ const InputField: React.FC<InputFieldProps> = ({
           themeInverse={!!selectedImage}
           borderBottomRightRadius={selectedImage ? 0 : undefined}
           borderTopRightRadius={selectedImage ? 0 : undefined}
+          style={{
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 1,
+          }}
         >
           {selectedImage ? "撮影済み" : "写真を撮影"}
         </Button>
@@ -141,6 +153,13 @@ const InputField: React.FC<InputFieldProps> = ({
             borderBottomLeftRadius={0}
             borderTopLeftRadius={0}
             onPress={() => setSelectedImage(null)}
+            style={{
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 2},
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 1,
+            }}
           />
         )}
       </XStack>

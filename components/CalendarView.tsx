@@ -3,6 +3,28 @@ import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native
 import {JournalEntry} from '../utils/types';
 import {ChevronDown} from "@tamagui/lucide-icons";
 
+// カラーパレット
+const COLORS = {
+  background: "#efebd0",
+  primary: "#1f454e",
+  secondary: "#ebcea6",
+  success: "#7ebdac",
+  error: "#e07a5f",     // 警告/エラー用の色
+  text: {
+    primary: "#1f454e", // 主要テキスト
+    secondary: "#4d6a72", // 二次テキスト
+    light: "#778f95",  // 薄いテキスト
+  },
+  surface: {
+    light: "#ffffff",   // 白色の表面
+    cream: "#f5f2e3",   // クリーム色の表面
+  },
+  calendar: {
+    sunday: "#c86464",  // 日曜日の色
+    saturday: "#4d6a72", // 土曜日の色
+  }
+};
+
 const DAYS_OF_WEEK = ['日', '月', '火', '水', '木', '金', '土'];
 
 interface CalendarViewProps {
@@ -95,7 +117,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           style={styles.arrowButton}
           onPress={goToPreviousMonth}
         >
-          <ChevronDown style={styles.prevIcon} width={20} height={20} stroke="#6B7280" />
+          <ChevronDown style={styles.prevIcon} width={20} height={20} stroke={COLORS.text.light} />
         </TouchableOpacity>
 
         <Text style={styles.monthTitle}>{`${year}年${month}月`}</Text>
@@ -104,7 +126,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           style={styles.arrowButton}
           onPress={goToNextMonth}
         >
-          <ChevronDown style={styles.nextIcon} width={20} height={20} stroke="#6B7280" />
+          <ChevronDown style={styles.nextIcon} width={20} height={20} stroke={COLORS.text.light} />
         </TouchableOpacity>
       </View>
 
@@ -168,10 +190,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.surface.light,
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -186,6 +208,7 @@ const styles = StyleSheet.create({
   arrowButton: {
     padding: 8,
     borderRadius: 9999,
+    backgroundColor: `${COLORS.secondary}30`, // 透明度30%
   },
   prevIcon: {
     transform: [{ rotate: '90deg' }],
@@ -196,7 +219,7 @@ const styles = StyleSheet.create({
   monthTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: COLORS.primary,
   },
   daysOfWeek: {
     flexDirection: 'row',
@@ -209,13 +232,13 @@ const styles = StyleSheet.create({
   dayOfWeekText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6B7280',
+    color: COLORS.text.light,
   },
   sundayText: {
-    color: '#EF4444',
+    color: COLORS.calendar.sunday,
   },
   saturdayText: {
-    color: '#3B82F6',
+    color: COLORS.calendar.saturday,
   },
   daysGrid: {
     flexDirection: 'row',
@@ -235,15 +258,15 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 14,
-    color: '#1F2937',
+    color: COLORS.text.primary,
   },
   dayTextWithEntry: {
-    color: 'white',
+    color: COLORS.surface.light,
   },
   goodDayIndicator: {
-    backgroundColor: '#10B981',
+    backgroundColor: COLORS.success,
   },
   badDayIndicator: {
-    backgroundColor: '#EF4444',
+    backgroundColor: COLORS.error,
   },
 });

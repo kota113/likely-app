@@ -7,6 +7,24 @@ import {RootStackParamList, RootTabParamList} from "../components/Navigation";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {TouchableOpacity} from "react-native";
 
+// カラーパレット
+const COLORS = {
+  background: "#efebd0",
+  primary: "#1f454e",
+  secondary: "#ebcea6",
+  success: "#7ebdac",
+  error: "#e07a5f",
+  text: {
+    primary: "#1f454e",
+    secondary: "#4d6a72",
+    light: "#778f95",
+  },
+  surface: {
+    light: "#ffffff",
+    cream: "#f5f2e3",
+  }
+};
+
 type DecideScreenNavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<RootTabParamList>,
   StackNavigationProp<RootStackParamList, 'Decide'>
@@ -29,62 +47,62 @@ export default function DecideScreen() {
   return (
     <View flex={1}>
       {/*todo: lottieからいい感じのアニメーションを持ってくる*/}
-      {isLoading ? <View flex={1}>
-        <Text>Loading...</Text>
+      {isLoading ? <View flex={1} backgroundColor={COLORS.background}>
+          <Text color={COLORS.text.primary}>Loading...</Text>
         </View>:
-        <YStack flex={1} backgroundColor="#f6f7fb" padding={16}>
+        <YStack flex={1} backgroundColor={COLORS.background} padding={16}>
           {/* Header */}
           <View style={{
             paddingVertical: 16,
             borderBottomWidth: 1,
-            borderBottomColor: '#e0e0e5',
+            borderBottomColor: `${COLORS.primary}20`,
             alignItems: 'center'
           }}>
-            <Text fontSize={18} fontWeight="bold" color="#5e5ce6">
+            <Text fontSize={18} fontWeight="bold" color={COLORS.primary}>
               運任せにしよう！
             </Text>
           </View>
 
           {/* Question Card */}
           <View style={{
-            backgroundColor: 'white',
+            backgroundColor: COLORS.surface.light,
             borderRadius: 16,
             padding: 24,
             marginVertical: 16,
-            shadowColor: '#000',
+            shadowColor: COLORS.primary,
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.05,
             shadowRadius: 15,
             elevation: 2,
           }}>
-            <Text fontSize={16} textAlign="center">
+            <Text fontSize={16} textAlign="center" color={COLORS.text.primary}>
               今日のランチはどこにしようか？
             </Text>
           </View>
 
-          <Text marginVertical={8}>選択肢:</Text>
+          <Text marginVertical={8} color={COLORS.text.secondary}>選択肢:</Text>
 
           {/* Options */}
           {options.map((option) => (
             <View
               key={option.id}
               style={{
-                backgroundColor: 'white',
+                backgroundColor: COLORS.surface.cream,
                 borderRadius: 16,
                 padding: 16,
                 marginVertical: 8,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                shadowColor: '#000',
+                shadowColor: COLORS.primary,
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.03,
                 shadowRadius: 8,
                 elevation: 1
               }}
             >
-              <Text fontSize={16} marginLeft={10}>{option.name}</Text>
-              <Text fontSize={14} color="#aaa">#{option.id}</Text>
+              <Text fontSize={16} marginLeft={10} color={COLORS.text.primary}>{option.name}</Text>
+              <Text fontSize={14} color={COLORS.text.light}>#{option.id}</Text>
             </View>
           ))}
 
@@ -92,19 +110,24 @@ export default function DecideScreen() {
           {/*todo: tamaguiにテーマを適用して、tamaguiのButtonを使う*/}
           <TouchableOpacity
             style={{
-              backgroundColor: '#5e5ce6',
+              backgroundColor: COLORS.primary,
               borderRadius: 50,
               height: 56,
               marginTop: 'auto',
               marginBottom: 16,
               justifyContent: 'center',
               alignItems: 'center',
+              shadowColor: COLORS.primary,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
             }}
             onPress={handleProceed}
           >
             <XStack alignItems="center">
-              <Dice5 color="white" size={20} style={{marginRight: 8}}/>
-              <Text style={{color: 'white', fontSize: 16, fontWeight: '600'}}>
+              <Dice5 color={COLORS.surface.light} size={20} style={{marginRight: 8}}/>
+              <Text style={{color: COLORS.surface.light, fontSize: 16, fontWeight: '600'}}>
                 運に任せる
               </Text>
             </XStack>

@@ -5,6 +5,24 @@ import {getJournalEntries} from '../utils/api';
 import {JournalEntry} from '../utils/types';
 import {Calendar, ChevronRight} from "@tamagui/lucide-icons";
 
+// カラーパレット
+const COLORS = {
+  background: "#efebd0",
+  primary: "#1f454e",
+  secondary: "#ebcea6",
+  success: "#7ebdac",
+  error: "#e07a5f",     // 追加: 警告/エラー用の色
+  text: {
+    primary: "#1f454e", // 主要テキスト
+    secondary: "#4d6a72", // 二次テキスト
+    light: "#778f95",  // 薄いテキスト
+  },
+  surface: {
+    light: "#ffffff",   // 白色の表面
+    cream: "#f5f2e3",   // クリーム色の表面
+  }
+};
+
 export default function JournalScreen() {
   const currentDate = new Date();
   const [year, setYear] = useState<number>(currentDate.getFullYear());
@@ -57,7 +75,7 @@ export default function JournalScreen() {
     >
       <View style={styles.entryHeader}>
         <View style={styles.dateContainer}>
-          <Calendar width={14} height={14} stroke="#6B7280" />
+          <Calendar width={14} height={14} stroke={COLORS.text.light} />
           <Text style={styles.dateText}>{formatDate(item.date)}</Text>
         </View>
         <View style={[
@@ -92,7 +110,7 @@ export default function JournalScreen() {
 
   return (
     <View
-      style={{flex: 1}}
+      style={{flex: 1, backgroundColor: COLORS.background}}
     >
       <View style={styles.content}>
         <View style={styles.headerCard}>
@@ -118,7 +136,7 @@ export default function JournalScreen() {
             {!selectedDate && (
               <TouchableOpacity style={styles.viewAllButton}>
                 <Text style={styles.viewAllText}>すべて見る</Text>
-                <ChevronRight width={14} height={14} stroke="#4F46E5" />
+                <ChevronRight width={14} height={14} stroke={COLORS.primary} />
               </TouchableOpacity>
             )}
           </View>
@@ -149,6 +167,7 @@ export default function JournalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
   },
   background: {
     flex: 1,
@@ -159,11 +178,11 @@ const styles = StyleSheet.create({
     paddingBottom: 0
   },
   headerCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.surface.light,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -172,12 +191,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: COLORS.primary,
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: COLORS.text.light,
   },
   entriesContainer: {
     flex: 1,
@@ -192,19 +211,19 @@ const styles = StyleSheet.create({
   entriesTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: COLORS.primary,
   },
   viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+    backgroundColor: `${COLORS.primary}15`, // 透明度15%
     borderRadius: 9999,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   viewAllText: {
     fontSize: 12,
-    color: '#4F46E5',
+    color: COLORS.primary,
     marginRight: 2,
   },
   entriesList: {
@@ -214,22 +233,22 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   entryItem: {
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.surface.light,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderLeftWidth: 4,
-    shadowColor: '#000',
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   goodItem: {
-    borderLeftColor: '#10B981',
+    borderLeftColor: COLORS.success,
   },
   badItem: {
-    borderLeftColor: '#EF4444',
+    borderLeftColor: COLORS.error,
   },
   entryHeader: {
     flexDirection: 'row',
@@ -243,7 +262,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: COLORS.text.light,
     marginLeft: 4,
   },
   evaluationBadge: {
@@ -252,25 +271,25 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   goodBadge: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: `${COLORS.success}15`, // 透明度15%
   },
   badBadge: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: `${COLORS.error}15`, // 透明度15%
   },
   evaluationText: {
     fontSize: 12,
     fontWeight: '500',
   },
   goodText: {
-    color: '#059669',
+    color: COLORS.success,
   },
   badText: {
-    color: '#DC2626',
+    color: COLORS.error,
   },
   questionText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: COLORS.primary,
     marginBottom: 12,
   },
   choiceContainer: {
@@ -284,26 +303,26 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   goodIndicator: {
-    backgroundColor: '#10B981',
+    backgroundColor: COLORS.success,
   },
   badIndicator: {
-    backgroundColor: '#EF4444',
+    backgroundColor: COLORS.error,
   },
   choiceText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: COLORS.text.secondary,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: `${COLORS.surface.light}80`, // 透明度80%
     borderRadius: 16,
     padding: 24,
   },
   emptyText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: COLORS.text.light,
     textAlign: 'center',
   },
 });
