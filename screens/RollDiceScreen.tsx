@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { GLView, ExpoWebGLRenderingContext } from 'expo-gl';
-import { Renderer, TextureLoader, THREE } from 'expo-three';
+import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {ExpoWebGLRenderingContext, GLView} from 'expo-gl';
+import {Renderer, TextureLoader, THREE} from 'expo-three';
 import * as CANNON from 'cannon-es';
-import { Accelerometer } from 'expo-sensors';
+import {Accelerometer} from 'expo-sensors';
 
 interface PhysicsBody {
   position: CANNON.Vec3;
@@ -14,7 +14,7 @@ interface PhysicsBody {
   applyTorque: (torque: CANNON.Vec3) => void;
 }
 
-export default function DiceApp(): React.ReactElement {
+export default function Screen(): React.ReactElement {
   const [isSensorAvailable, setSensorAvailable] = useState<boolean>(true);
   const [message, setMessage] = useState<string>('端末を振るとサイコロが転がります');
 
@@ -153,7 +153,7 @@ export default function DiceApp(): React.ReactElement {
     // @ts-ignore
     renderer.current.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
     // @ts-ignore
-    renderer.current.setClearColor('#333333');
+    renderer.current.setClearColor('#efebd0');
 
     // シーンの作成
     scene.current = new THREE.Scene();
@@ -169,7 +169,7 @@ export default function DiceApp(): React.ReactElement {
     camera.current.lookAt(0, 0, 0);
 
     // ライトの設定
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.current.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -181,7 +181,9 @@ export default function DiceApp(): React.ReactElement {
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0x444444,
       roughness: 0.8,
-      metalness: 0.2
+      metalness: 0.2,
+      transparent: true,
+      opacity: 0 // Adjust the opacity for transparency
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -191,24 +193,21 @@ export default function DiceApp(): React.ReactElement {
     // 角丸サイコロの作成 - BoxGeometryの代わりにRoundedBoxGeometryライクな形状を使用
     // Expo-ThreeではRoundedBoxGeometryが直接利用できないため、代替アプローチを使用
 
-    // 球体と立方体を組み合わせて角丸のサイコロを作成
+    // 球体と立方体を組み合わせてサイコロを作成
     const boxSize = 1; // 少し小さめの箱サイズ
     const diceGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-
-    // 球体とボックスのジオメトリを組み合わせることで角丸の見た目を作ることもできますが、
-    // Expoの環境制限を考慮して、ここではシンプルなBoxGeometryを使用します
 
     // テクスチャのロード
     const textureLoader = new TextureLoader();
 
     try {
       const textures = await Promise.all([
-        textureLoader.load(require('./assets/dice1.png')),
-        textureLoader.load(require('./assets/dice2.png')),
-        textureLoader.load(require('./assets/dice3.png')),
-        textureLoader.load(require('./assets/dice4.png')),
-        textureLoader.load(require('./assets/dice5.png')),
-        textureLoader.load(require('./assets/dice6.png')),
+        textureLoader.load(require('../assets/dice1.png')),
+        textureLoader.load(require('../assets/dice2.png')),
+        textureLoader.load(require('../assets/dice3.png')),
+        textureLoader.load(require('../assets/dice4.png')),
+        textureLoader.load(require('../assets/dice5.png')),
+        textureLoader.load(require('../assets/dice6.png')),
       ]);
 
       // サイコロのマテリアル (面ごとに異なるテクスチャ)
@@ -356,7 +355,7 @@ export default function DiceApp(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222',
+    backgroundColor: '#efebd0',
     alignItems: 'center',
     justifyContent: 'center',
   },
