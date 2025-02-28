@@ -1,6 +1,10 @@
 import {Check, Dice5, X} from "@tamagui/lucide-icons";
 import {TouchableOpacity} from "react-native";
 import {Text, View, XStack, YStack} from "tamagui";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {RootStackParamList, RootTabParamList} from "../components/Navigation";
+import {CompositeScreenProps} from "@react-navigation/native";
+import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 
 // カラーパレット
 const COLORS = {
@@ -20,7 +24,12 @@ const COLORS = {
   }
 };
 
-export default function DecisionResultScreen() {
+type NavigationProp = CompositeScreenProps<
+  BottomTabScreenProps<RootTabParamList>,
+  NativeStackScreenProps<RootStackParamList, 'DecisionResult'>
+>;
+
+export default function DecisionResultScreen({navigation}: NavigationProp) {
   return (
     <YStack flex={1} backgroundColor={COLORS.background} justifyContent={"space-between"}>
       <YStack>
@@ -99,6 +108,7 @@ export default function DecisionResultScreen() {
         </Text>
         <XStack justifyContent="space-between" marginHorizontal={16} marginBottom={32}>
           <TouchableOpacity
+            onPress={() => {navigation.navigate('Home')}}
             style={{
               backgroundColor: COLORS.success,
               borderRadius: 12,
@@ -119,6 +129,7 @@ export default function DecisionResultScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={() => {navigation.navigate('Home')}}
             style={{
               backgroundColor: COLORS.error,
               borderRadius: 12,
