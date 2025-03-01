@@ -2,9 +2,34 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Calendar, Dice5, Home} from "@tamagui/lucide-icons";
+import {Calendar, Dices, Home} from "@tamagui/lucide-icons";
 import {View} from "tamagui"
 import {useHomeScrollContext} from "../contexts/HomeScrollContext";
+
+// カラーパレット
+const COLORS = {
+  background: "#efebd0",
+  primary: "#1f454e",
+  secondary: "#ebcea6",
+  success: "#7ebdac",
+  error: "#e07a5f",
+  text: {
+    primary: "#1f454e",
+    secondary: "#4d6a72",
+    light: "#778f95",
+  },
+  surface: {
+    light: "#ffffff",
+    cream: "#f5f2e3",
+  },
+  tabBar: {
+    background: "#f5f2e3",  // 少し濃いめのクリーム色（背景と区別できるように）
+    border: "#d9d6bd",      // 境界線をはっきりさせる
+    active: "#1f454e",      // アクティブなタブの色
+    inactive: "#778f95",    // 非アクティブなタブの色
+    activeBackground: "rgba(31, 69, 78, 0.15)", // アクティブなアイコンの背景
+  }
+};
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
@@ -40,7 +65,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
 
         // タブアイコンの選択
         const renderIcon = () => {
-          const iconColor = isFocused ? '#4F46E5' : '#9CA3AF';
+          const iconColor = isFocused ? COLORS.tabBar.active : COLORS.tabBar.inactive;
           const size = 20;
 
           switch (route.name) {
@@ -50,15 +75,21 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
               return <Calendar stroke={iconColor} width={size} height={size} />;
             case 'DecideBtnEmptyScreen':
               return <View
-                padding={20}
+                padding={18}
                 marginTop={-40}
                 borderRadius={100}
-                backgroundColor={"#1f454e"}
+                backgroundColor={COLORS.secondary}
                 justifyContent={"center"}
                 alignItems={"center"}
+                shadowColor={COLORS.primary}
+                shadowOffset={{ width: 0, height: 2 }}
+                shadowOpacity={0.25}
+                shadowRadius={4}
+                style={{elevation: 3}}
               >
-                <Dice5
-                  color={"#ffffff"}
+                <Dices
+                  color={COLORS.primary}
+                  size={33}
                 />
               </View>;
             default:
@@ -79,12 +110,20 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
             ]}>
               {renderIcon()}
             </View>
-            <Text style={[
-              styles.label,
-              isFocused && styles.activeLabel
-            ]}>
-              {label}
-            </Text>
+            {route.name !== 'DecideBtnEmptyScreen' ? (
+              <Text style={[
+                styles.label,
+                isFocused && styles.activeLabel
+              ]}>
+                {label}
+              </Text>
+            ): (
+              <Text style={[
+                styles.label
+              ]}>
+                {label}
+              </Text>
+            )}
           </TouchableOpacity>
         );
       })}
@@ -92,15 +131,20 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
   );
 };
 
-// todo: インラインCSSに変更
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: COLORS.tabBar.background,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(229, 231, 235, 0.5)',
+    borderTopColor: COLORS.tabBar.border,
     paddingVertical: 8,
+    // 影を追加して境界をはっきりさせる
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
   },
   tabButton: {
     flex: 1,
@@ -113,16 +157,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   activeIconContainer: {
-    backgroundColor: 'rgba(23,50,57,0.14)',
+    backgroundColor: COLORS.tabBar.activeBackground,
     borderRadius: 10
   },
   label: {
     fontSize: 12,
     marginTop: 4,
     fontWeight: '500',
-    color: '#1f454e',
+    color: COLORS.tabBar.inactive,
   },
   activeLabel: {
-    color: '#173239',
+    color: COLORS.tabBar.active,
   },
 });

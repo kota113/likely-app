@@ -108,7 +108,7 @@ export default function DecisionResultScreen({navigation}: NavigationProp) {
         </Text>
         <XStack justifyContent="space-between" marginHorizontal={16} marginBottom={32}>
           <TouchableOpacity
-            onPress={() => {navigation.navigate('Home')}}
+            onPress={() => {navigation.navigate('HomeTabs')}}
             style={{
               backgroundColor: COLORS.success,
               borderRadius: 12,
@@ -129,7 +129,7 @@ export default function DecisionResultScreen({navigation}: NavigationProp) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => {navigation.navigate('Home')}}
+            onPress={() => {navigation.navigate('HomeTabs')}}
             style={{
               backgroundColor: COLORS.error,
               borderRadius: 12,
