@@ -1,5 +1,5 @@
 {
-  "name": "choice-helper",
+  "name": "likely",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -29,15 +29,18 @@
     "expo-camera": "~16.0.17",
     "expo-image-picker": "~16.0.6",
     "expo-sensors": "^14.0.2",
+    "expo-speech-recognition": "^1.1.1",
     "expo-status-bar": "~2.0.1",
     "expo-three": "^8.0.0",
+    "expo-video": "~2.0.5",
     "lottie-react-native": "7.1.0",
     "react": "18.3.1",
     "react-native": "0.76.7",
-    "react-native-reanimated": "~3.16.1",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-safe-area-context": "^5.2.0",
     "tamagui": "1.115.5",
-    "expo-video": "~2.0.5"
+    "expo-dev-client": "~5.0.12"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

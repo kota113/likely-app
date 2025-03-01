@@ -2,9 +2,7 @@ import {Check, Dice5, X} from "@tamagui/lucide-icons";
 import {TouchableOpacity} from "react-native";
 import {Text, View, XStack, YStack} from "tamagui";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootStackParamList, RootTabParamList} from "../components/Navigation";
-import {CompositeScreenProps} from "@react-navigation/native";
-import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
+import {RootStackParamList} from "../components/Navigation";
 
 // カラーパレット
 const COLORS = {
@@ -24,12 +22,7 @@ const COLORS = {
   }
 };
 
-type NavigationProp = CompositeScreenProps<
-  BottomTabScreenProps<RootTabParamList>,
-  NativeStackScreenProps<RootStackParamList, 'DecisionResult'>
->;
-
-export default function DecisionResultScreen({navigation}: NavigationProp) {
+export default function DecisionResultScreen({navigation}: NativeStackScreenProps<RootStackParamList, 'DecisionResult'>) {
   return (
     <YStack flex={1} backgroundColor={COLORS.background} justifyContent={"space-between"}>
       <YStack>

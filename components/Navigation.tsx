@@ -11,6 +11,7 @@ import DecideScreen from "../screens/DecideScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 import TempRollDiceScreen from "../screens/TempRollDiceScreen";
 import DecisionResultScreen from "../screens/DecisionResultScreen";
+import LoginScreen from "../screens/Login";
 
 export type RootTabParamList = {
   Home: undefined;
@@ -19,6 +20,7 @@ export type RootTabParamList = {
   History: undefined;
 };
 export type RootStackParamList = {
+  Login: undefined;
   HomeTabs: undefined;
   Decide: { query: string, imageUri: string | null };
   RollDice: { decisionId: string };
@@ -50,6 +52,7 @@ export const Navigation = () => {
           <Stack.Screen name="Decide" component={DecideScreen} options={{headerShown: false}}/>
           <Stack.Screen name="RollDice" component={TempRollDiceScreen}/>
           <Stack.Screen name="DecisionResult" component={DecisionResultScreen}/>
+          <Stack.Screen name="Login" component={LoginScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </View>
