@@ -51,7 +51,7 @@ export default function DecisionResultScreen({navigation}: NativeStackScreenProp
           elevation: 2,
         }}>
           <Text fontSize={16} textAlign="center" color={COLORS.text.primary}>
-            今日のランチはどこにしようか？
+            何のラーメンを食べようか？
           </Text>
         </View>
 
@@ -74,7 +74,7 @@ export default function DecisionResultScreen({navigation}: NativeStackScreenProp
           </Text>
 
           <Text fontSize={24} fontWeight="bold" color={COLORS.surface.light} marginBottom={16}>
-            中華そば
+            味噌ラーメン
           </Text>
 
           <TouchableOpacity

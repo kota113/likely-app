@@ -37,8 +37,8 @@ export default function DecideScreen() {
   const options = [
     { id: 1, name: '中華そば' },
     { id: 2, name: '特製中華そば' },
-    { id: 3, name: '味噌そば' },
-    { id: 4, name: '特製味噌そば' }
+    { id: 3, name: '味噌ラーメン' },
+    { id: 4, name: '特製味噌ラーメン' }
   ];
 
   const handleProceed = () => {
@@ -76,7 +76,7 @@ export default function DecideScreen() {
             elevation: 2,
           }}>
             <Text fontSize={16} textAlign="center" color={COLORS.text.primary}>
-              何のラーメンを食べようか
+              何のラーメンを食べようか？
             </Text>
           </View>
 
